@@ -1,0 +1,34 @@
+{
+  "meta": {
+    "title": "鞍山中考数学·知识点诊断测试",
+    "subject": "数学（七年级+八年级+九年级）",
+    "grade": "七~九年级",
+    "source": "zhongkao-coach-v3.0-math",
+    "color": "#2563EB",
+    "colorLight": "#EFF6FF",
+    "timeRange": "30-40"
+  },
+  "examDistribution": [
+    {"topic": "实数与科学记数法", "choice": 1, "fill": 0},
+    {"topic": "整式与分式", "choice": 1, "fill": 0},
+    {"topic": "方程与不等式", "choice": 1, "fill": 1},
+    {"topic": "函数基础", "choice": 1, "fill": 0},
+    {"topic": "一次函数", "choice": 1, "fill": 1},
+    {"topic": "反比例函数", "choice": 1, "fill": 0},
+    {"topic": "二次函数", "choice": 1, "fill": 1},
+    {"topic": "统计与概率", "choice": 1, "fill": 0},
+    {"topic": "三角形", "choice": 1, "fill": 1},
+    {"topic": "四边形", "choice": 1, "fill": 0},
+    {"topic": "圆", "choice": 1, "fill": 1},
+    {"topic": "图形变换", "choice": 1, "fill": 0},
+    {"topic": "坐标系", "choice": 1, "fill": 0},
+    {"topic": "相似与比例", "choice": 1, "fill": 0},
+    {"topic": "锐角三角函数", "choice": 0, "fill": 1}
+  ],
+  "questionFiles": ["math-questions.js"],
+  "startInfo": [
+    "科目：数学（七年级+八年级+九年级）",
+    "题数：20 题（随机组卷）",
+    "用时：约 30-40 分钟"
+  ]
+}
