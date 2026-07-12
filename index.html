@@ -985,7 +985,7 @@ function renderPaper() {
       var letters = ['A', 'B', 'C', 'D'];
       q.options.forEach(function(opt, j) {
         html +=
-          '<div class="option" data-q="' + i + '" data-val="' + letters[j] + '" onclick="selectOption(this, ' + i + ', \'' + letters[j] + "')">" +
+          '<div class="option" data-q="' + i + '" data-val="' + letters[j] + '" onclick="selectOption(this, ' + i + ', \'' + letters[j] + '\")">" +
             '<span class="option-letter">' + letters[j] + '</span>' +
             '<span>' + opt + '</span>' +
           '</div>';
@@ -1076,7 +1076,7 @@ function startQuiz() {
       var letters = ['A', 'B', 'C', 'D'];
       q.options.forEach(function(opt, j) {
         html +=
-          '<div class="option" data-q="' + i + '" data-val="' + letters[j] + '" onclick="selectOption(this, ' + i + ', \'' + letters[j] + "')">" +
+          '<div class="option" data-q="' + i + '" data-val="' + letters[j] + '" onclick="selectOption(this, ' + i + ', \'' + letters[j] + '\")">" +
             '<span class="option-letter">' + letters[j] + '</span>' +
             '<span>' + opt + '</span>' +
           '</div>';
