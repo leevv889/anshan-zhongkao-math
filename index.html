@@ -588,6 +588,19 @@ body {
   font-weight: 500;
 }
 
+.submit-status {
+  text-align: center;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  margin-top: 12px;
+  display: none;
+}
+.submit-status.show { display: block; }
+.submit-status.sending { background: var(--primary-light); color: var(--primary); }
+.submit-status.success { background: var(--success-light); color: var(--success); }
+.submit-status.error { background: var(--error-light); color: var(--error); cursor: pointer; }
+
 @media (max-width: 380px) {
   .nav-dots { gap: 5px; padding: 10px 12px; }
   .nav-dot { width: 28px; height: 28px; font-size: 12px; border-radius: 6px; }
@@ -718,6 +731,7 @@ body {
     <button class="btn-copy" onclick="copyResults()">📋 复制结果发送给教练</button>
     <button class="btn-retry" onclick="retryQuiz()">🔄 重新答题（随机组卷）</button>
     <div class="copy-hint">复制后粘贴到微信/QoderWork对话中，教练会自动分析</div>
+    <div class="submit-status" id="submitStatus"></div>
   </div>
 </div>
 
@@ -1277,6 +1291,9 @@ function showResults(results, correctCount) {
 
   window._quizResults = { results: results, correctCount: correctCount, wrongCount: wrongCount, pct: pct, elapsedSeconds: elapsedSeconds };
 
+  // Auto-submit results to coach agent (via Cloudflare Worker)
+  submitToServer();
+
   renderMath();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1344,6 +1361,63 @@ function toggleReview(filter, btn) {
   document.querySelectorAll('.review-toggle-btn').forEach(function(b) { b.classList.remove('active'); });
   btn.classList.add('active');
   renderReviewList(window._quizResults.results, filter);
+}
+
+// ============================================================
+// AUTO-SUBMIT TO SERVER
+// ============================================================
+function submitToServer() {
+  var workerUrl = 'https://zk-submit.livv99622.workers.dev';
+  var apiKey = 'wt2qHBloX7dcQ5naRz_ia5kwDhc-CeZh';
+  if (!workerUrl || !apiKey) return;
+
+  var statusEl = document.getElementById('submitStatus');
+  statusEl.textContent = '⭐ 正在同步成绩到教练...';
+  statusEl.className = 'submit-status show sending';
+
+  var data = window._quizResults;
+  var payload = {
+    subject: QUIZ_META.subject,
+    student: QUIZ_META.student || '未填写',
+    grade: QUIZ_META.grade,
+    date: QUIZ_META.date,
+    score: data.correctCount + '/' + currentPaper.length,
+    pct: data.pct,
+    elapsedSeconds: data.elapsedSeconds,
+    results: data.results.map(function(r) {
+      return {
+        id: r.id, topic: r.topic, difficulty: r.difficulty,
+        type: r.type, studentAnswer: r.studentAnswer,
+        isCorrect: r.isCorrect, correctAnswer: r.answer
+      };
+    }),
+    weakTopics: (function() {
+      var wt = {};
+      data.results.forEach(function(r) {
+        if (!r.isCorrect) wt[r.topic] = (wt[r.topic] || 0) + 1;
+      });
+      return wt;
+    })(),
+    source: QUIZ_META.source,
+    timestamp: new Date().toISOString()
+  };
+
+  fetch(workerUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-API-Key': apiKey },
+    body: JSON.stringify(payload)
+  }).then(function(resp) {
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    return resp.json();
+  }).then(function() {
+    statusEl.textContent = '✅ 成绩已同步，教练将收到你的测试报告';
+    statusEl.className = 'submit-status show success';
+  }).catch(function(err) {
+    statusEl.textContent = '❌ 同步失败，点击重试';
+    statusEl.className = 'submit-status show error';
+    statusEl.onclick = function() { submitToServer(); };
+    console.error('Submit failed:', err);
+  });
 }
 
 // ============================================================
